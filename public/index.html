@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Usuario - GTA World Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo-area"></div>
+        <div class="nav-item active" onclick="navigateTo('dashboard')">
+            <i class="fas fa-home"></i> Inicio
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h3>Panel de Eventos</h3>
+            <div style="display: flex; gap: 10px; align-items: center">
+                <span>Jugador</span>
+                <div style="width: 30px; height: 30px; background: #555; border-radius: 50%;"></div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <div id="dashboard-main" class="tab-content active">
+                
+                <div class="stats-grid">
+                    <div class="card">
+                        <h3 id="count-total">0</h3>
+                        <p>Total Eventos</p>
+                    </div>
+                    <div class="card" style="border-color: #ffc107">
+                        <h3 id="count-pending">0</h3>
+                        <p>Pendientes</p>
+                    </div>
+                    <div class="card" style="border-color: #28a745">
+                        <h3 id="count-accepted">0</h3>
+                        <p>Aceptados</p>
+                    </div>
+                    <div class="card" style="border-color: #dc3545">
+                        <h3 id="count-rejected">0</h3>
+                        <p>Rechazados</p>
+                    </div>
+                </div>
+
+                <div style="background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 20px; font-size: 0.9rem;">
+                    <strong>Nota:</strong> Los eventos deben solicitarse con al menos 24 horas de antelación para garantizar disponibilidad del Staff.
+                </div>
+
+                <div style="margin-bottom: 15px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-broadcast-tower"></i> Gestión de Eventos
+                </div>
+
+                <div class="action-cards-container">
+                    <div class="action-card" onclick="navigateTo('create-event-section')">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Solicitar Evento</span>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('list-events-section')">
+                        <i class="fas fa-list"></i>
+                        <span>Ver Historial</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="create-event-section" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-plus-circle"></i> Solicitar Nuevo Evento</div>
+                    <button class="close-section-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="inner-view-container">
+                    <div class="discord-warning">
+                        <i class="fab fa-discord"></i>
+                        <div>
+                            <strong>¡IMPORTANTE!</strong><br />Debes estar presente en Discord. Se abrirá un <strong>TICKET</strong> para discutir los detalles.
+                        </div>
+                    </div>
+
+                    <div class="create-event-wrapper">
+                        <div class="form-container">
+                            <form id="eventForm">
+                                <div class="form-group">
+                                    <label>ID Usuario Discord</label>
+                                    <input type="text" name="userId" required placeholder="Ej: 351278352704995329" />
+                                    <details class="discord-help">
+                                        <summary><i class="fas fa-question-circle"></i> ¿Cómo obtengo mi ID?</summary>
+                                        <p>1. Ajustes > Avanzado > Modo Desarrollador.<br />2. Clic derecho en tu nombre > Copiar ID.</p>
+                                    </details>
+                                </div>
+                                <div class="form-group">
+                                    <label>Título del Evento</label>
+                                    <input type="text" name="title" id="inputTitle" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Flyer del Evento</label>
+                                    <input type="file" name="flyer" id="inputFlyer" accept="image/*" required />
+                                    <small class="info-limit">Formatos: JPG, PNG. Tamaño recomendado: 1920x1080.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción</label>
+                                    <textarea name="description" id="inputDesc" rows="4" required></textarea>
+                                    <small class="info-limit">Soporta Markdown básico: **negrita**, *cursiva*, __subrayado__.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha y Hora (Intervalos de 30 min)</label>
+                                    <input type="datetime-local" name="date" id="dateInput" step="1800" required />
+                                    <span id="dateError" class="error-text">Esta hora ya está ocupada.</span>
+                                </div>
+                                <hr style="border-color: #444; margin: 20px 0" />
+
+                                <h3 style="color: #f0ad4e; margin-bottom: 10px">Soporte Técnico</h3>
+                                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px">
+                                    Solo selecciona si realmente lo necesitas.
+                                </p>
+                                
+                                <div class="form-group">
+                                    <label>¿Coches?</label>
+                                    <select name="needsCars" onchange="toggleField('carsDetails', this.value)">
+                                        <option value="false">No</option>
+                                        <option value="true">Sí</option>
+                                    </select>
+                                    <div id="carsDetails" class="hidden-field">
+                                        <label>Descripción Coches:</label>
+                                        <textarea name="carsDesc" rows="2" placeholder="Ej: Sultan Classic negro, Sanchez roja..."></textarea>
+                                        <small class="info-limit">⚠️ Máximo 5-10 vehículos por evento. Indica modelo exacto, color y modificaciones.</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>¿Emisora?</label>
+                                    <select name="needsRadio">
+                                        <option value="false">No</option>
+                                        <option value="true">Sí</option>
+                                    </select>
+                                    <small class="info-limit">ℹ️ Solo para eventos con DJ EXPERIMENTADOS. Se asignará una emisora temporal.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>¿Mapeo?</label>
+                                    <select name="needsMapping" onchange="toggleField('mappingDetails', this.value)">
+                                        <option value="false">No</option>
+                                        <option value="true">Sí</option>
+                                    </select>
+                                    <div id="mappingDetails" class="hidden-field">
+                                        <label>Descripción:</label><textarea name="mappingDesc" rows="2"></textarea>
+                                        <label style="margin-top:10px">Fotos Mapeo:</label>
+                                        <input type="file" name="mappingFiles" multiple accept="image/*" />
+                                        <small class="info-limit">⚠️ Adjunta fotos claras de la ubicación y referencia.</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" style="background: #5865f2; color: white; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer;">ENVIAR</button>
+                            </form>
+                        </div>
+
+                        <div class="preview-container-wrapper">
+                            <h3 style="color: #ccc; margin-bottom:10px;">Vista Previa (Anuncios)</h3>
+                            <div class="discord-preview-box">
+                                <div class="discord-header">
+                                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" class="discord-avatar" alt="Bot Avatar">
+                                    <div>
+                                        <span class="discord-username">GTAWEvent</span>
+                                        <span class="discord-bot-tag">BOT</span>
+                                        <span class="discord-timestamp">Hoy a las 12:00</span>
+                                    </div>
+                                </div>
+                                <div class="discord-embed">
+                                    <div class="discord-embed-title" id="previewTitle">Título del Evento</div>
+                                    <div class="discord-embed-desc" id="previewDesc">La descripción aparecerá aquí...</div>
+                                    <div class="discord-embed-fields">
+                                        <div><div class="discord-field-name">🕒 Fecha y Hora</div><div class="discord-field-value" id="previewDate">--/--/---- --:--</div></div>
+                                        <div><div class="discord-field-name">👥 Interesados</div><div class="discord-field-value">0 personas</div></div>
+                                    </div>
+                                    <div class="discord-embed-image" id="previewImageContainer"><img src="" id="previewImageImg"></div>
+                                    <div class="discord-footer">Evento solicitado al Equipo de Eventos del PM.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="list-events-section" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-list"></i> Historial de Eventos</div>
+                    <button class="close-section-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="inner-view-container" style="padding: 0; overflow: hidden;">
+                    <table id="eventsTable">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>ID Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div> </div> <div id="detailsModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitle">Detalles</h3>
+                <span class="modal-close" onclick="closeModal(event)"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid">
+                    <div class="info-item"><label>ID del Ticket</label><span id="modalTicketId" style="font-family: monospace; color: #f0ad4e">#000000</span></div>
+                    <div class="info-item"><label>Estado Actual</label><span id="modalStatus" class="badge">PENDIENTE</span></div>
+                    <div class="info-item"><label>Organizador</label><span id="modalUser">Usuario</span></div>
+                    <div class="info-item"><label>Fecha y Hora</label><span id="modalDate">--/--/--</span></div>
+                </div>
+                <div class="detail-section"><div class="detail-title">Descripción</div><p id="modalDesc" style="color: #ccc; white-space: pre-wrap">...</p></div>
+                <div class="detail-section"><div class="detail-title">Flyer Oficial</div><img id="modalFlyer" src="" alt="Sin Flyer" class="flyer-preview" /></div>
+                
+                <div id="modalCarsSection" class="detail-section" style="display: none">
+                    <div class="detail-title"><i class="fas fa-car"></i> Solicitud de Vehículos</div>
+                    <p id="modalCarsDesc">...</p>
+                </div>
+                <div id="modalRadioSection" class="detail-section" style="display: none">
+                    <div class="detail-title"><i class="fas fa-broadcast-tower"></i> Solicitud de Emisora</div>
+                    <p>✅ Se requiere configuración de emisora.</p>
+                </div>
+                <div id="modalMappingSection" class="detail-section" style="display: none">
+                    <div class="detail-title"><i class="fas fa-cubes"></i> Solicitud de Mapeo</div>
+                    <p id="modalMappingDesc" style="margin-bottom: 10px">...</p>
+                    <div id="modalMappingGallery" class="mapping-gallery"></div>
+                </div>
+                <div id="modalRejectSection" class="detail-section" style="display: none; border: 1px solid #dc3545; background: rgba(220, 53, 69, 0.1);">
+                    <div class="detail-title" style="color: #dc3545">❌ Motivo del Rechazo</div>
+                    <p id="modalRejectReason" style="color: #ffcccc"></p>
+                </div>
+            </div>
+            <div class="modal-footer"><button onclick="closeModal()" style="background: #444; color: white; border: none; padding: 8px 15px; cursor: pointer;">Cerrar</button></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
